@@ -9,6 +9,9 @@ import threading
 import traceback
 
 
+__version__ = '0.1'
+
+
 class MultiProcessingHandler(logging.Handler):
 
     def __init__(self, name, sub_handler=None):
