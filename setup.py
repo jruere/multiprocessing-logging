@@ -26,4 +26,5 @@ setup(
     packages=['tests'],
     py_modules=['multiprocessing_logging'],
     platforms=["POSIX"],
+    test_suite="tests",
 )
