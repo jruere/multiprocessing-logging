@@ -3,13 +3,12 @@
 
 from __future__ import absolute_import, division, unicode_literals
 
-import itertools
+from io import StringIO
 import logging
 import multiprocessing as mp
 import random
 import re
 import time
-from StringIO import StringIO
 import unittest
 
 from multiprocessing_logging import MultiProcessingHandler
@@ -50,14 +49,15 @@ class WhenMultipleProcessesLog(unittest.TestCase):
         subject.close()
         stream.seek(0)
         lines = stream.readlines()
-        open('out', 'w').write(''.join(lines))
-        self.assertEqual("Starting workers...", lines[0].strip())
+        self.assertIn("Starting workers...\n", lines)
         self.assertIn("Workers done.\n", lines)
 
         valid_line = re.compile(
-            r"(?:Worker \d+ started\.)"
+            r"(?:Starting workers...)"
+            r"|(?:Worker \d+ started\.)"
             r"|(?:Workers started\.)"
             r"|(?:Worker \d+ finished processing\.)"
+            r"|(?:Workers done.)"
         )
         for line in lines[1:-1]:
             self.assertTrue(re.match(valid_line, line))
