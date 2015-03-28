@@ -1,13 +1,9 @@
 # multiprocessing-logging
 
 [![Downloads](https://pypip.in/download/multiprocessing-logging/badge.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
-
 [![Supported Python versions](https://pypip.in/py_versions/multiprocessing-logging/badge.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
-
 [![Development Status](https://pypip.in/status/multiprocessing-logging/badge.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
-
 [![Download format](https://pypip.in/format/multiprocessing-logging/badge.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
-
 [![License](https://pypip.in/license/multiprocessing-logging/badge.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
 
 
