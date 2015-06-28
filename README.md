@@ -15,7 +15,7 @@ This simple module implements a `Handler` that when set on the root
 `Logger` will handle tunneling the records to the main process so that
 they are handled correctly.
 
-Unfortunately, this technique only works with Subprocesses and not with a Pool
+Unfortunately, this technique only works with Processes and not with a Pool
 of processes. If you need this, I'd welcome a pull request! :)
 
 It's currently tested in Linux and Python 2.7 and 3.4.
