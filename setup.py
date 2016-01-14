@@ -1,13 +1,10 @@
 # vim : fileencoding=UTF-8 :
-
 from setuptools import setup
-
-import multiprocessing_logging
 
 
 setup(
     name='multiprocessing-logging',
-    version=multiprocessing_logging.__version__,
+    version='0.2.1',
     description='Logger for multiprocessing applications',
     url='https://github.com/jruere/multiprocessing-logging',
     license="LGPLv3",
