@@ -12,6 +12,22 @@ import traceback
 __version__ = '0.2.1'
 
 
+def install_mp_handler(logger=None):
+    """Wraps the handlers in the given Logger with an MultiProcessingHandler.
+
+    :param logger: whose handlers to wrap. By default, the root logger.
+    """
+    if logger is None:
+        logger = logging.getLogger()
+
+    for i, orig_handler in enumerate(list(logger.handlers)):
+        handler = MultiProcessingHandler(
+            'mp-handler-{}'.format(i), sub_handler=orig_handler)
+
+        logger.removeHandler(orig_handler)
+        logger.addHandler(handler)
+
+
 class MultiProcessingHandler(logging.Handler):
 
     def __init__(self, name, sub_handler=None):
@@ -56,7 +72,7 @@ class MultiProcessingHandler(logging.Handler):
             record.msg = record.msg % record.args
             record.args = None
         if record.exc_info:
-            dummy = self.format(record)
+            self.format(record)
             record.exc_info = None
 
         return record

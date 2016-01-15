@@ -3,18 +3,67 @@
 
 from __future__ import absolute_import, division, unicode_literals
 
-from io import StringIO
 import logging
 import multiprocessing as mp
 import random
 import re
 import time
 import unittest
+from io import StringIO
 
-from multiprocessing_logging import MultiProcessingHandler
+try:
+    from unittest import mock
+except ImportError:
+    mock = None
+
+from multiprocessing_logging import install_mp_handler, MultiProcessingHandler
 
 
-class WhenMultipleProcessesLog(unittest.TestCase):
+class InstallHandlersTest(unittest.TestCase):
+
+    def setUp(self):
+        self.handler = logging.NullHandler()
+        self.logger = logging.Logger('test-logger')
+        self.logger.addHandler(self.handler)
+
+    def _assert_result(self):
+        wrapper_handler, = self.logger.handlers
+        self.assertIsInstance(wrapper_handler, MultiProcessingHandler)
+        self.assertIs(wrapper_handler.sub_handler, self.handler)
+
+    def test_when_no_logger_is_specified_then_it_uses_the_root_logger(self):
+        if not mock:
+            self.skipTest('unittest.mock is not available')
+
+        with mock.patch('logging.getLogger') as getLogger:
+            getLogger.return_value = self.logger
+
+            install_mp_handler()
+
+            getLogger.assert_called_once_with()
+
+        wrapper_handler, = self.logger.handlers
+        self.assertIsInstance(wrapper_handler, MultiProcessingHandler)
+        self.assertIs(wrapper_handler.sub_handler, self.handler)
+
+    def test_when_a_logger_is_passed_then_it_does_not_change_the_root_logger(self):
+        if not mock:
+            self.skipTest('unittest.mock is not available')
+
+        with mock.patch('logging.getLogger') as getLogger:
+            install_mp_handler(self.logger)
+
+            self.assertEqual(0, getLogger.call_count)
+
+    def test_when_a_logger_is_passed_then_it_wraps_all_handlers(self):
+        install_mp_handler(self.logger)
+
+        wrapper_handler, = self.logger.handlers
+        self.assertIsInstance(wrapper_handler, MultiProcessingHandler)
+        self.assertIs(wrapper_handler.sub_handler, self.handler)
+
+
+class WhenMultipleProcessesLogRecords(unittest.TestCase):
 
     def test_then_records_should_not_be_garbled(self):
         stream = StringIO()

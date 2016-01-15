@@ -29,9 +29,10 @@ project.
 
 # Usage
 
-When configuring logging, do the following:
+Before you start logging but after you configure the logging framework (maybe with `logging.basicConfig(...)`), do the following:
 
-    logging.getLogger().addHandler(
-        multiprocessing_logging.MultiProcessingHandler('worker-logger'))
+    import multiprocessing_logging
+
+    multiprocessing_logging.install_mp_handler()
 
 and that's it.
