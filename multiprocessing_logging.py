@@ -38,7 +38,8 @@ class MultiProcessingHandler(logging.Handler):
 
         self.sub_handler = sub_handler
         self.queue = multiprocessing.Queue(-1)
-
+        self.setLevel(self.sub_handler.level)
+        self.setFormatter(self.sub_handler.formatter)
         # The thread handles receiving records asynchronously.
         t = threading.Thread(target=self.receive, name=name)
         t.daemon = True
