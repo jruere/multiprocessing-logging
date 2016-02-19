@@ -18,7 +18,7 @@ they are handled correctly.
 Unfortunately, this technique only works with Processes and not with a Pool
 of processes. If you need this, I'd welcome a pull request! :)
 
-It's currently tested in Linux and Python 2.7 and 3.4.
+It's currently tested in Linux and Python 2.7 and 3.3+.
 
 
 # Origin
