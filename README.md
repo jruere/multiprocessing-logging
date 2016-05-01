@@ -27,6 +27,8 @@ This library was taken verbatim from a [StackOverflow post](http://stackoverflow
 and extracted into a module so that I wouldn't have to copy the code in every
 project.
 
+Later, several improvements have been contributed.
+
 # Usage
 
 Before you start logging but after you configure the logging framework (maybe with `logging.basicConfig(...)`), do the following:
@@ -36,3 +38,13 @@ Before you start logging but after you configure the logging framework (maybe wi
     multiprocessing_logging.install_mp_handler()
 
 and that's it.
+
+## With multiprocessing.Pool
+
+When using a Pool, the process workers instantiated by the Pool will not initialize multiprocessing-logging handlers automatically.
+It has to be done in the initilizer like this:
+
+    from multiprocessing import Pool
+    import multiprocessing_logging
+
+    pool = Pool(42, initializer=multiprocessing_logging.install_mp_handler)
