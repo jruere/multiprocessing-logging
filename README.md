@@ -2,11 +2,8 @@
 
 [![Run Status](https://api.shippable.com/projects/57c8a389407d610f0052c211/badge?branch=master)](https://app.shippable.com/projects/57c8a389407d610f0052c211)
 [![Coverage Badge](https://api.shippable.com/projects/57c8a389407d610f0052c211/coverageBadge?branch=master)](https://app.shippable.com/projects/57c8a389407d610f0052c211)
-[![Downloads](https://pypip.in/download/multiprocessing-logging/badge.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
-[![Supported Python versions](https://pypip.in/py_versions/multiprocessing-logging/badge.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
-[![Development Status](https://pypip.in/status/multiprocessing-logging/badge.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
-[![Download format](https://pypip.in/format/multiprocessing-logging/badge.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
-[![License](https://pypip.in/license/multiprocessing-logging/badge.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/multiprocessing-logging.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
+[![License](https://img.shields.io/pypi/l/multiprocessing-logging.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
 
 
 When using the `multiprocessing` module, logging becomes less useful since
