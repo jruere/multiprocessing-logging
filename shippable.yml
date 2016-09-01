@@ -1,0 +1,23 @@
+# Language setting
+language: python
+
+# Version number
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - pypy
+  - pypy3
+
+build:
+  ci:
+    # Create folders for test and code coverage
+    - mkdir -p shippable/testresults
+    - mkdir -p shippable/codecoverage
+
+    # Run test and code coverage and output results to the right folder
+    - pip install nose coverage
+    - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
+    - which python && coverage run --branch -m unittest discover
+    - which python && coverage xml -o shippable/codecoverage/coverage.xml
