@@ -19,5 +19,5 @@ build:
     # Run test and code coverage and output results to the right folder
     - pip install nose coverage
     - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
-    - which python && coverage run --branch -m unittest discover
+    - which python && coverage run --branch --source multiprocessing_logging.py -m unittest discover
     - which python && coverage xml -o shippable/codecoverage/coverage.xml
