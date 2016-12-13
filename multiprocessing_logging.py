@@ -90,3 +90,5 @@ class MultiProcessingHandler(logging.Handler):
     def close(self):
         self.sub_handler.close()
         logging.Handler.close(self)
+        self.queue.close()
+        self.queue.join_thread()
