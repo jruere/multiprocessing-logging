@@ -16,6 +16,7 @@ they are handled correctly.
 
 It's currently tested in Linux and Python 2.7, 3.3+, pypy & pypy3.
 
+It does not work on Windows and I believe it could not work.
 
 # Origin
 
