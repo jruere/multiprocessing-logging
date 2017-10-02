@@ -14,9 +14,6 @@ before_install:
   - pip install --upgrade pip setuptools
   - pip install nose2 coverage
 
-install:
-  - pip install -r requirements.txt
-
 before_script:
   - mkdir -p shippable/testresults
   - mkdir -p shippable/codecoverage
