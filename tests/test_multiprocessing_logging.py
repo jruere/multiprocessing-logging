@@ -86,13 +86,10 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
             proc.start()
 
         logger.info("Workers started.")
-        time.sleep(1)
 
         for proc in procs:
             proc.join(timeout=1)
         logger.info("Workers done.")
-
-        time.sleep(0.5)  # For log records to propagate.
 
         subject.close()
         stream.seek(0)
@@ -110,6 +107,50 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         )
         for line in lines[1:-1]:
             self.assertTrue(re.match(valid_line, line))
+
+    def test_then_it_should_keep_the_last_record_sent(self):
+        stream = StringIO()
+        subject = MultiProcessingHandler(
+            'mp-handler', logging.StreamHandler(stream=stream))
+        logger = logging.Logger('root')
+        logger.addHandler(subject)
+
+        logger.info("Last record.")
+
+        subject.close()
+
+        value = stream.getvalue()
+        self.assertEqual('Last record.\n', value)
+
+    def test_then_it_should_pass_all_logs(self):
+        stream = StringIO()
+        subject = MultiProcessingHandler(
+            'mp-handler', logging.StreamHandler(stream=stream))
+        logger = logging.Logger('root')
+        logger.addHandler(subject)
+
+        def worker(wid, logger):
+            for _ in range(10):
+                logger.info("Worker %d log.", wid)
+
+        logger.info("Starting workers...")
+        procs = [mp.Process(target=worker, args=(wid, logger)) for wid in range(2)]
+        for proc in procs:
+            proc.daemon = True
+            proc.start()
+        logger.info("Workers started.")
+
+        for proc in procs:
+            proc.join(timeout=1)
+        logger.info("Workers done.")
+
+        subject.close()
+        stream.seek(0)
+        lines = stream.readlines()
+        self.assertEqual("Starting workers...\n", lines[0])
+        self.assertIn("Workers started.\n", lines)
+        self.assertEqual("Workers done.\n", lines[-1])
+        self.assertEqual(10 * 2 + 3, len(lines))
 
 
 if __name__ == '__main__':

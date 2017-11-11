@@ -41,6 +41,7 @@ class MultiProcessingHandler(logging.Handler):
         self.setFormatter(self.sub_handler.formatter)
 
         self.queue = multiprocessing.Queue(-1)
+        self._is_closed = False
         # The thread handles receiving records asynchronously.
         self._receive_thread = threading.Thread(target=self._receive, name=name)
         self._receive_thread.daemon = True
@@ -51,7 +52,7 @@ class MultiProcessingHandler(logging.Handler):
         self.sub_handler.setFormatter(fmt)
 
     def _receive(self):
-        while True:
+        while not (self._is_closed and self.queue.empty()):
             try:
                 record = self.queue.get()
                 self.sub_handler.emit(record)
@@ -61,6 +62,9 @@ class MultiProcessingHandler(logging.Handler):
                 break
             except:
                 traceback.print_exc(file=sys.stderr)
+
+        self.queue.close()
+        self.queue.join_thread()
 
     def _send(self, s):
         self.queue.put_nowait(s)
@@ -89,5 +93,9 @@ class MultiProcessingHandler(logging.Handler):
             self.handleError(record)
 
     def close(self):
-        self.sub_handler.close()
-        super(MultiProcessingHandler, self).close()
+        if not self._is_closed:
+            self._is_closed = True
+            self._receive_thread.join(1.0)  # Waits for receive queue to empty.
+
+            self.sub_handler.close()
+            super(MultiProcessingHandler, self).close()
