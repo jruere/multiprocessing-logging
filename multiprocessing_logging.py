@@ -95,7 +95,7 @@ class MultiProcessingHandler(logging.Handler):
     def close(self):
         if not self._is_closed:
             self._is_closed = True
-            self._receive_thread.join(1.0)  # Waits for receive queue to empty.
+            self._receive_thread.join(5.0)  # Waits for receive queue to empty.
 
             self.sub_handler.close()
             super(MultiProcessingHandler, self).close()

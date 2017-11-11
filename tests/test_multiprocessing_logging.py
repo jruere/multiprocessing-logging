@@ -88,13 +88,13 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         logger.info("Workers started.")
 
         for proc in procs:
-            proc.join(timeout=1)
+            proc.join()
         logger.info("Workers done.")
 
         subject.close()
         stream.seek(0)
         lines = stream.readlines()
-        self.assertEqual("Starting workers...\n", lines[0])
+        self.assertIn("Starting workers...\n", lines)
         self.assertIn("Workers started.\n", lines)
         self.assertEqual("Workers done.\n", lines[-1])
 
@@ -105,7 +105,7 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
             r"|(?:Worker \d+ finished processing\.)"
             r"|(?:Workers done.)"
         )
-        for line in lines[1:-1]:
+        for line in lines:
             self.assertTrue(re.match(valid_line, line))
 
     def test_then_it_should_keep_the_last_record_sent(self):
@@ -141,15 +141,16 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         logger.info("Workers started.")
 
         for proc in procs:
-            proc.join(timeout=1)
+            proc.join()
         logger.info("Workers done.")
 
         subject.close()
+
         stream.seek(0)
         lines = stream.readlines()
-        self.assertEqual("Starting workers...\n", lines[0])
+        self.assertIn("Starting workers...\n", lines)
         self.assertIn("Workers started.\n", lines)
-        self.assertEqual("Workers done.\n", lines[-1])
+        self.assertIn("Workers done.\n", lines)
         self.assertEqual(10 * 2 + 3, len(lines))
 
 
