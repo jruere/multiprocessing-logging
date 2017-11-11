@@ -94,12 +94,12 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
 
         time.sleep(0.5)  # For log records to propagate.
 
-        subject.sub_handler.flush()
         subject.close()
         stream.seek(0)
         lines = stream.readlines()
-        self.assertIn("Starting workers...\n", lines)
-        self.assertIn("Workers done.\n", lines)
+        self.assertEqual("Starting workers...\n", lines[0])
+        self.assertIn("Workers started.\n", lines)
+        self.assertEqual("Workers done.\n", lines[-1])
 
         valid_line = re.compile(
             r"(?:Starting workers...)"
