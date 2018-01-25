@@ -38,4 +38,12 @@ and that's it.
 
 ## With multiprocessing.Pool
 
-When using a Pool, the process workers instantiated by the Pool will not initialize multiprocessing-logging handlers automatically. Currently, there's no solution for this.
+When using a Pool, make sure `install_mp_handler` is called before the Pool is instantiated, for example:
+
+    import logging
+    from multiprocessing import Pool
+    from multiprocessing_logging import install_mp_handler
+    
+    loggig.basicConfig(...)
+    install_mp_handler()
+    pool = Pool(...)
