@@ -14,6 +14,7 @@ python:
 before_install:
   - pip install --upgrade pip setuptools
   - pip install nose2 coverage
+  - if [ "$SHIPPABLE_PYTHON_VERSION" == "2.7" ]; then pip install mock; fi
 
 before_script:
   - mkdir -p shippable/testresults
