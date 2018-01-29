@@ -9,6 +9,13 @@ import threading
 import traceback
 
 
+try:
+    import queue
+except ImportError:
+    # Python 2.0.
+    import Queue as queue
+
+
 __version__ = '0.2.4'
 
 
@@ -54,12 +61,14 @@ class MultiProcessingHandler(logging.Handler):
     def _receive(self):
         while not (self._is_closed and self.queue.empty()):
             try:
-                record = self.queue.get()
+                record = self.queue.get(timeout=0.2)
                 self.sub_handler.emit(record)
             except (KeyboardInterrupt, SystemExit):
                 raise
             except EOFError:
                 break
+            except queue.Empty:
+                pass  # This periodically checks if the logger is closed.
             except:
                 traceback.print_exc(file=sys.stderr)
 
