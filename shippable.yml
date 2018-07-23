@@ -8,8 +8,7 @@ python:
   - "3.5"
   - "3.6"
   - pypy
-# Hangs on nose2, for some reason.
-#  - pypy3
+  - pypy3
 
 before_install:
   - pip install --upgrade pip setuptools
@@ -21,7 +20,7 @@ before_script:
 
 script:
   - nose2
-  - 'which python && coverage run --branch -m unittest discover'
+  - 'which python && coverage run --branch setup.py test'
   - 'which python && coverage xml -o shippable/codecoverage/coverage.xml'
 
 #after_success:

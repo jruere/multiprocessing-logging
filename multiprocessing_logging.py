@@ -15,7 +15,7 @@ except ImportError:
     import Queue as queue  # Python 2.
 
 
-__version__ = '0.2.6'
+__version__ = '0.2.7'
 
 
 def install_mp_handler(logger=None):

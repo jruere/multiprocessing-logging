@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='multiprocessing-logging',
-    version='0.2.6',
+    version='0.2.7',
     description='Logger for multiprocessing applications',
     url='https://github.com/jruere/multiprocessing-logging',
     license="LGPLv3",
@@ -31,4 +31,5 @@ setup(
     py_modules=['multiprocessing_logging'],
     platforms=["POSIX"],
     test_suite="tests",
+    tests_require=["mock~=2.0.0 ; python_version < '3.3'"],
 )
