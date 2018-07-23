@@ -76,7 +76,6 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         logger.info("Starting workers...")
         procs = [mp.Process(target=worker, args=(wid, logger)) for wid in range(100)]
         for proc in procs:
-            proc.daemon = True
             proc.start()
 
         logger.info("Workers started.")
@@ -130,7 +129,6 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         logger.info("Starting workers...")
         procs = [mp.Process(target=worker, args=(wid, logger)) for wid in range(2)]
         for proc in procs:
-            proc.daemon = True
             proc.start()
         logger.info("Workers started.")
 
