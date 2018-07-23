@@ -13,7 +13,7 @@ python:
 
 before_install:
   - pip install --upgrade pip setuptools
-  - pip install nose2 coverage
+  - pip install nose2 coverage mock
 
 before_script:
   - mkdir -p shippable/testresults
@@ -21,7 +21,7 @@ before_script:
 
 script:
   - nose2
-  - 'which python && coverage run --branch setup.py test'
+  - 'which python && coverage run --branch -m unittest discover'
   - 'which python && coverage xml -o shippable/codecoverage/coverage.xml'
 
 #after_success:
