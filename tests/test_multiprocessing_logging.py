@@ -82,7 +82,7 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         logger.info("Workers started.")
 
         for proc in procs:
-            proc.join(2)  # This is to avoid hangs in Pypy3.
+            proc.join()
         logger.info("Workers done.")
 
         subject.close()
