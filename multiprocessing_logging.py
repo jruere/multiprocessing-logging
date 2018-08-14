@@ -45,6 +45,7 @@ class MultiProcessingHandler(logging.Handler):
 
         self.setLevel(self.sub_handler.level)
         self.setFormatter(self.sub_handler.formatter)
+        self.filters = self.sub_handler.filters
 
         self.queue = multiprocessing.Queue(-1)
         self._is_closed = False
@@ -52,10 +53,6 @@ class MultiProcessingHandler(logging.Handler):
         self._receive_thread = threading.Thread(target=self._receive, name=name)
         self._receive_thread.daemon = True
         self._receive_thread.start()
-
-    def setFormatter(self, fmt):
-        super(MultiProcessingHandler, self).setFormatter(fmt)
-        self.sub_handler.setFormatter(fmt)
 
     def _receive(self):
         while not (self._is_closed and self.queue.empty()):
