@@ -32,3 +32,7 @@ script:
   # This method uses S3 bucket to upload the build artifacts
   # - aws deploy push --application-name $CD_APP_NAME --s3-location s3://$CD_BUCKET/$CD_KEY --ignore-hidden-files
   # - aws deploy create-deployment --application-name $CD_APP_NAME --s3-location bucket=$CD_BUCKET,key=$CD_KEY,bundleType=zip --deployment-group-name $CD_DEPLOYMENT_GROUP | python scripts/wait_for_completion.py
+
+# after_succes
+after_success:
+  - coveralls
