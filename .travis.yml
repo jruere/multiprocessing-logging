@@ -1,0 +1,34 @@
+# Language setting
+language: python
+
+# Version number
+python:
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  # Has synchronization issues.
+  # - pypy
+  # Hangs on tests.
+  # - pypy3
+
+before_install:
+  - pip install --upgrade pip setuptools
+  - pip install nose2 coverage mock
+
+before_script:
+  - mkdir -p shippable/testresults
+  - mkdir -p shippable/codecoverage
+
+script:
+  - nose2
+  - 'which python && coverage run --branch -m unittest discover'
+  - 'which python && coverage xml -o shippable/codecoverage/coverage.xml'
+
+#after_success:
+  # Use the following for GitHub-based deployments:
+  # - aws deploy create-deployment --application-name $CD_APP_NAME --github-location repository=$REPO_NAME,commitId=$COMMIT --deployment-group-name $CD_DEPLOYMENT_GROUP | python scripts/wait_for_completion.py
+
+  # This method uses S3 bucket to upload the build artifacts
+  # - aws deploy push --application-name $CD_APP_NAME --s3-location s3://$CD_BUCKET/$CD_KEY --ignore-hidden-files
+  # - aws deploy create-deployment --application-name $CD_APP_NAME --s3-location bucket=$CD_BUCKET,key=$CD_KEY,bundleType=zip --deployment-group-name $CD_DEPLOYMENT_GROUP | python scripts/wait_for_completion.py
