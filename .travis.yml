@@ -14,7 +14,7 @@ python:
 
 before_install:
   - pip install --upgrade pip setuptools
-  - pip install nose2 coverage mock
+  - pip install nose2 coverage mock coveralls
 
 before_script:
   - mkdir -p shippable/testresults
