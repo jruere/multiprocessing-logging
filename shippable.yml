@@ -7,13 +7,14 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-  - pypy
-# Hangs on nose2, for some reason.
-#  - pypy3
+  # Has synchronization issues.
+  # - pypy
+  # Hangs on tests.
+  # - pypy3
 
 before_install:
   - pip install --upgrade pip setuptools
-  - pip install nose2 coverage
+  - pip install nose2 coverage mock
 
 before_script:
   - mkdir -p shippable/testresults

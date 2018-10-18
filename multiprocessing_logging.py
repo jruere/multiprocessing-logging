@@ -20,11 +20,10 @@ import traceback
 try:
     import queue
 except ImportError:
-    # Python 2.0.
-    import Queue as queue
+    import Queue as queue  # Python 2.
 
 
-__version__ = '0.2.6'
+__version__ = '0.2.7'
 
 
 def install_mp_handler(logger=None):

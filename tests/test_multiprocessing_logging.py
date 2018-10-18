@@ -14,7 +14,7 @@ from io import StringIO
 try:
     from unittest import mock
 except ImportError:
-    mock = None
+    import mock  # Python 2.
 
 from multiprocessing_logging import install_mp_handler, MultiProcessingHandler
 
@@ -32,9 +32,6 @@ class InstallHandlersTest(unittest.TestCase):
         self.assertIs(wrapper_handler.sub_handler, self.handler)
 
     def test_when_no_logger_is_specified_then_it_uses_the_root_logger(self):
-        if not mock:
-            self.skipTest('unittest.mock is not available')
-
         with mock.patch('logging.getLogger') as getLogger:
             getLogger.return_value = self.logger
 
@@ -47,9 +44,6 @@ class InstallHandlersTest(unittest.TestCase):
         self.assertIs(wrapper_handler.sub_handler, self.handler)
 
     def test_when_a_logger_is_passed_then_it_does_not_change_the_root_logger(self):
-        if not mock:
-            self.skipTest('unittest.mock is not available')
-
         with mock.patch('logging.getLogger') as getLogger:
             install_mp_handler(self.logger)
 
@@ -82,7 +76,6 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         logger.info("Starting workers...")
         procs = [mp.Process(target=worker, args=(wid, logger)) for wid in range(100)]
         for proc in procs:
-            proc.daemon = True
             proc.start()
 
         logger.info("Workers started.")
@@ -136,7 +129,6 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         logger.info("Starting workers...")
         procs = [mp.Process(target=worker, args=(wid, logger)) for wid in range(2)]
         for proc in procs:
-            proc.daemon = True
             proc.start()
         logger.info("Workers started.")
 
