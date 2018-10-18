@@ -44,6 +44,6 @@ When using a Pool, make sure `install_mp_handler` is called before the Pool is i
     from multiprocessing import Pool
     from multiprocessing_logging import install_mp_handler
     
-    loggig.basicConfig(...)
+    logging.basicConfig(...)
     install_mp_handler()
     pool = Pool(...)
