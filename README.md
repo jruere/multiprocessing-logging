@@ -20,7 +20,7 @@ Pypy3 hangs on the tests so I don't recommend using it.
 
 Pypy has synchronization issues.
 
-It does not work on Windows and I believe it could not work.
+It was tested by users and reported to work on Windows with Python 3.5 and 3.6.
 
 # Origin
 
