@@ -6,6 +6,7 @@ setup(
     name='multiprocessing-logging',
     version='0.2.7',
     description='Logger for multiprocessing applications',
+    long_description=open('README.md').read(),
     url='https://github.com/jruere/multiprocessing-logging',
     license="LGPLv3",
     classifiers=[
@@ -21,6 +22,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: Implementation :: CPython',
         'Operating System :: POSIX',
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     keywords="multiprocessing logging logger handler",
     author="Javier Ruere",
