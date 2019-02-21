@@ -34,9 +34,11 @@ Later, several improvements have been contributed.
 
 Before you start logging but after you configure the logging framework (maybe with `logging.basicConfig(...)`), do the following:
 
-    import multiprocessing_logging
+```py
+import multiprocessing_logging
 
-    multiprocessing_logging.install_mp_handler()
+multiprocessing_logging.install_mp_handler()
+```
 
 and that's it.
 
@@ -44,10 +46,12 @@ and that's it.
 
 When using a Pool, make sure `install_mp_handler` is called before the Pool is instantiated, for example:
 
-    import logging
-    from multiprocessing import Pool
-    from multiprocessing_logging import install_mp_handler
-    
-    loggig.basicConfig(...)
-    install_mp_handler()
-    pool = Pool(...)
+```py
+import logging
+from multiprocessing import Pool
+from multiprocessing_logging import install_mp_handler
+
+loggig.basicConfig(...)
+install_mp_handler()
+pool = Pool(...)
+```
