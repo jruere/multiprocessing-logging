@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='multiprocessing-logging',
-    version='0.2.7',
+    version='0.3.0',
     description='Logger for multiprocessing applications',
     long_description=open('README.md').read(),
     url='https://github.com/jruere/multiprocessing-logging',
