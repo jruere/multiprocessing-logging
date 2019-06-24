@@ -45,6 +45,7 @@ class MultiProcessingHandler(logging.Handler):
 
         self.setLevel(self.sub_handler.level)
         self.setFormatter(self.sub_handler.formatter)
+        self.filters = self.sub_handler.filters
 
         self.queue = multiprocessing.Queue(-1)
         self._is_closed = False
