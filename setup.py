@@ -1,12 +1,19 @@
 # vim : fileencoding=UTF-8 :
+import io
+import os.path
+
 from setuptools import setup
+
+
+readme_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.md')
 
 
 setup(
     name='multiprocessing-logging',
     version='0.3.0',
     description='Logger for multiprocessing applications',
-    long_description=open('README.md').read(),
+    long_description_content_type="text/markdown",
+    long_description=io.open(readme_file, 'rt', encoding='utf-8').read(),
     url='https://github.com/jruere/multiprocessing-logging',
     license="LGPLv3",
     classifiers=[
