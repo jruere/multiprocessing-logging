@@ -3,16 +3,17 @@
 from __future__ import absolute_import, division, unicode_literals
 
 import logging
-import multiprocessing
 import sys
 import threading
 import traceback
 
 
 try:
-    import queue
+    from queue import Empty
+    from multiprocessing import SimpleQueue
 except ImportError:
-    import Queue as queue  # Python 2.
+    from Queue import Empty # Python 2.
+    from multiprocessing import Queue as SimpleQueue
 
 
 __version__ = '0.3.0'
@@ -47,7 +48,7 @@ class MultiProcessingHandler(logging.Handler):
         self.setFormatter(self.sub_handler.formatter)
         self.filters = self.sub_handler.filters
 
-        self.queue = multiprocessing.Queue(-1)
+        self.queue = SimpleQueue()
         self._is_closed = False
         # The thread handles receiving records asynchronously.
         self._receive_thread = threading.Thread(target=self._receive, name=name)
@@ -61,22 +62,19 @@ class MultiProcessingHandler(logging.Handler):
     def _receive(self):
         while not (self._is_closed and self.queue.empty()):
             try:
-                record = self.queue.get(timeout=0.2)
+                record = self.queue.get()
                 self.sub_handler.emit(record)
             except (KeyboardInterrupt, SystemExit):
                 raise
             except EOFError:
                 break
-            except queue.Empty:
+            except Empty:
                 pass  # This periodically checks if the logger is closed.
             except:
                 traceback.print_exc(file=sys.stderr)
 
-        self.queue.close()
-        self.queue.join_thread()
-
     def _send(self, s):
-        self.queue.put_nowait(s)
+        self.queue.put(s)
 
     def _format_record(self, record):
         # ensure that exc_info and args
