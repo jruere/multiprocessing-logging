@@ -59,18 +59,23 @@ class MultiProcessingHandler(logging.Handler):
         self.sub_handler.setFormatter(fmt)
 
     def _receive(self):
-        while not (self._is_closed and self.queue.empty()):
-            try:
-                record = self.queue.get(timeout=0.2)
-                self.sub_handler.emit(record)
-            except (KeyboardInterrupt, SystemExit):
-                raise
-            except EOFError:
-                break
-            except queue.Empty:
-                pass  # This periodically checks if the logger is closed.
-            except:
-                traceback.print_exc(file=sys.stderr)
+        try:
+            while not (self._is_closed and self.queue.empty()):
+                try:
+                    record = self.queue.get(timeout=0.2)
+                    self.sub_handler.emit(record)
+                except (KeyboardInterrupt, SystemExit):
+                    raise
+                except (EOFError, BrokenPipeError):
+                    break
+                except queue.Empty:
+                    pass  # This periodically checks if the logger is closed.
+                except:
+                    traceback.print_exc(file=sys.stderr)
+        except BrokenPipeError:
+            pass
+        except:
+            traceback.print_exc(file=sys.stderr)
 
         self.queue.close()
         self.queue.join_thread()
