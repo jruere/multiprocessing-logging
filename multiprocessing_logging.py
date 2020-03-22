@@ -33,6 +33,21 @@ def install_mp_handler(logger=None):
         logger.removeHandler(orig_handler)
         logger.addHandler(handler)
 
+        
+def uninstall_mp_handler(logger=None):
+    """Unwraps the handlers in the given Logger from a MultiProcessingHandler wrapper
+
+    :param logger: whose handlers to unwrap. By defaul, the root logger.
+    """
+    if logger is None:
+        logger = logging.getLogger()
+
+    for handler in logger.handlers:
+        if isinstance(handler, MultiProcessingHandler):
+            orig_handler = handler.sub_handler
+            logger.removeHandler(handler)
+            logger.addHandler(orig_handler)
+
 
 class MultiProcessingHandler(logging.Handler):
 
