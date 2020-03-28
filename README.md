@@ -20,7 +20,7 @@ Pypy3 hangs on the tests so I don't recommend using it.
 
 Pypy appears to be working, recently.
 
-It was tested by users and reported to work on Windows with Python 3.5 and 3.6.
+Only works on POSIX systems and only Linux is supported. It does not work on Windows.
 
 # Origin
 
