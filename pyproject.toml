@@ -7,7 +7,7 @@ legacy_tox_ini = """
 [tox]
 # pypy3 hangs.
 # pypy has synchronization issues.
-envlist = py27, py35, py36, py37, pypy
+envlist = py27, py35, py36, py37, py38
 isolated_build = True
 
 [testenv]
