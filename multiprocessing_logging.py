@@ -13,9 +13,10 @@ try:
     import queue
 except ImportError:
     import Queue as queue  # Python 2.
+    BrokenPipeError = OSError
 
 
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 
 
 def install_mp_handler(logger=None):
@@ -33,7 +34,7 @@ def install_mp_handler(logger=None):
         logger.removeHandler(orig_handler)
         logger.addHandler(handler)
 
-        
+
 def uninstall_mp_handler(logger=None):
     """Unwraps the handlers in the given Logger from a MultiProcessingHandler wrapper
 
@@ -74,13 +75,16 @@ class MultiProcessingHandler(logging.Handler):
         self.sub_handler.setFormatter(fmt)
 
     def _receive(self):
-        while not (self._is_closed and self.queue.empty()):
+        while True:
             try:
+                if self._is_closed and self.queue.empty():
+                    break
+
                 record = self.queue.get(timeout=0.2)
                 self.sub_handler.emit(record)
             except (KeyboardInterrupt, SystemExit):
                 raise
-            except EOFError:
+            except (BrokenPipeError, EOFError):
                 break
             except queue.Empty:
                 pass  # This periodically checks if the logger is closed.

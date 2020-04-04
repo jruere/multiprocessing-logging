@@ -12,9 +12,12 @@ import unittest
 from io import StringIO
 
 try:
+    import queue
     from unittest import mock
-except ImportError:
-    import mock  # Python 2.
+except ImportError:  # Python 2.
+    import mock
+    import Queue as queue
+    BrokenPipeError = OSError
 
 from multiprocessing_logging import install_mp_handler, MultiProcessingHandler
 
@@ -144,6 +147,27 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         self.assertIn("Workers started.\n", lines)
         self.assertIn("Workers done.\n", lines)
         self.assertEqual(10 * 2 + 3, len(lines))
+
+    def test_when_the_connection_to_the_child_process_breaks_then_it_closes_the_queue(self):
+        stream = StringIO()
+        with mock.patch(
+                'multiprocessing_logging.multiprocessing.Queue',
+                autospec=True,
+        ) as queue_class:
+            # autospec failed.
+            queue_class.return_value = queue_inst = mock.Mock()
+            queue_inst.get.side_effect = queue.Empty()
+            queue_inst.empty.side_effect = BrokenPipeError('error on empty')
+
+            logger = logging.Logger('root')
+            subject = MultiProcessingHandler(
+                'mp-handler', logging.StreamHandler(stream=stream))
+            try:
+                logger.addHandler(subject)
+            finally:
+                subject.close()
+
+            queue_inst.close.assert_called_once_with()
 
 
 if __name__ == '__main__':
