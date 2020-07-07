@@ -10,7 +10,7 @@ readme_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.m
 
 setup(
     name='multiprocessing-logging',
-    version='0.3.1',
+    version='0.4.0',
     description='Logger for multiprocessing applications',
     long_description_content_type="text/markdown",
     long_description=io.open(readme_file, 'rt', encoding='utf-8').read(),
