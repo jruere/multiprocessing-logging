@@ -7,6 +7,7 @@ import multiprocessing
 import sys
 import threading
 import traceback
+import socket
 
 
 try:
@@ -75,6 +76,11 @@ class MultiProcessingHandler(logging.Handler):
         self.sub_handler.setFormatter(fmt)
 
     def _receive(self):
+        try:
+          broken_pipe_error = BrokenPipeError
+        except NameError:
+          broken_pipe_error = socket.error
+        
         while True:
             try:
                 if self._is_closed and self.queue.empty():
@@ -84,7 +90,7 @@ class MultiProcessingHandler(logging.Handler):
                 self.sub_handler.emit(record)
             except (KeyboardInterrupt, SystemExit):
                 raise
-            except (BrokenPipeError, EOFError):
+            except (broken_pipe_error, EOFError):
                 break
             except queue.Empty:
                 pass  # This periodically checks if the logger is closed.
