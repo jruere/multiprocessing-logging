@@ -17,7 +17,7 @@ except ImportError:
     BrokenPipeError = OSError
 
 
-__version__ = '0.3.1'
+__version__ = '0.4.0'
 
 
 def install_mp_handler(logger=None):
@@ -53,7 +53,14 @@ def uninstall_mp_handler(logger=None):
 
 class MultiProcessingHandler(logging.Handler):
 
-    def __init__(self, name, sub_handler=None):
+    def __init__(self, name, sub_handler=None, queue_factory=None):
+        """
+        :param name: The name of this handler
+        :param sub_handler: The handler to foward events to. If None, use a new logging.SteamHandler
+        :param queue_factory: Used to modify the underlying queue used. Provide a zero argument callable that returns an
+            object matching the interface of multiprocessing.Queue. If None, multiprocessing.Queue is used as the
+            underlying queue.
+        """
         super(MultiProcessingHandler, self).__init__()
 
         if sub_handler is None:
@@ -64,7 +71,11 @@ class MultiProcessingHandler(logging.Handler):
         self.setFormatter(self.sub_handler.formatter)
         self.filters = self.sub_handler.filters
 
-        self.queue = multiprocessing.Queue(-1)
+        if queue_factory is None:
+            self.queue = multiprocessing.Queue(-1)
+        else:
+            self.queue = queue_factory()
+
         self._is_closed = False
         # The thread handles receiving records asynchronously.
         self._receive_thread = threading.Thread(target=self._receive, name=name)
