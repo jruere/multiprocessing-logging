@@ -97,8 +97,6 @@ class MultiProcessingHandler(logging.Handler):
             except:
                 traceback.print_exc(file=sys.stderr)
 
-        self.queue.join()
-
     def _send(self, s):
         self.queue.put_nowait(s)
 
