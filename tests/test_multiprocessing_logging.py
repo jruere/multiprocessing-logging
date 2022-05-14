@@ -17,37 +17,37 @@ try:
 except ImportError:  # Python 2.
     import mock
     import Queue as queue
+
     BrokenPipeError = OSError
 
 from multiprocessing_logging import install_mp_handler, MultiProcessingHandler
 
 
 class InstallHandlersTest(unittest.TestCase):
-
     def setUp(self):
         self.handler = logging.NullHandler()
-        self.logger = logging.Logger('test-logger')
+        self.logger = logging.Logger("test-logger")
         self.logger.addHandler(self.handler)
 
     def _assert_result(self):
-        wrapper_handler, = self.logger.handlers
+        (wrapper_handler,) = self.logger.handlers
         self.assertIsInstance(wrapper_handler, MultiProcessingHandler)
         self.assertIs(wrapper_handler.sub_handler, self.handler)
 
     def test_when_no_logger_is_specified_then_it_uses_the_root_logger(self):
-        with mock.patch('logging.getLogger') as getLogger:
+        with mock.patch("logging.getLogger") as getLogger:
             getLogger.return_value = self.logger
 
             install_mp_handler()
 
             getLogger.assert_called_once_with()
 
-        wrapper_handler, = self.logger.handlers
+        (wrapper_handler,) = self.logger.handlers
         self.assertIsInstance(wrapper_handler, MultiProcessingHandler)
         self.assertIs(wrapper_handler.sub_handler, self.handler)
 
     def test_when_a_logger_is_passed_then_it_does_not_change_the_root_logger(self):
-        with mock.patch('logging.getLogger') as getLogger:
+        with mock.patch("logging.getLogger") as getLogger:
             install_mp_handler(self.logger)
 
             self.assertEqual(0, getLogger.call_count)
@@ -55,18 +55,16 @@ class InstallHandlersTest(unittest.TestCase):
     def test_when_a_logger_is_passed_then_it_wraps_all_handlers(self):
         install_mp_handler(self.logger)
 
-        wrapper_handler, = self.logger.handlers
+        (wrapper_handler,) = self.logger.handlers
         self.assertIsInstance(wrapper_handler, MultiProcessingHandler)
         self.assertIs(wrapper_handler.sub_handler, self.handler)
 
 
 class WhenMultipleProcessesLogRecords(unittest.TestCase):
-
     def test_then_records_should_not_be_garbled(self):
         stream = StringIO()
-        subject = MultiProcessingHandler(
-            'mp-handler', logging.StreamHandler(stream=stream))
-        logger = logging.Logger('root')
+        subject = MultiProcessingHandler("mp-handler", logging.StreamHandler(stream=stream))
+        logger = logging.Logger("root")
         logger.addHandler(subject)
 
         def worker(wid, logger):
@@ -106,9 +104,8 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
 
     def test_then_it_should_keep_the_last_record_sent(self):
         stream = StringIO()
-        subject = MultiProcessingHandler(
-            'mp-handler', logging.StreamHandler(stream=stream))
-        logger = logging.Logger('root')
+        subject = MultiProcessingHandler("mp-handler", logging.StreamHandler(stream=stream))
+        logger = logging.Logger("root")
         logger.addHandler(subject)
 
         logger.info("Last record.")
@@ -116,13 +113,12 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         subject.close()
 
         value = stream.getvalue()
-        self.assertEqual('Last record.\n', value)
+        self.assertEqual("Last record.\n", value)
 
     def test_then_it_should_pass_all_logs(self):
         stream = StringIO()
-        subject = MultiProcessingHandler(
-            'mp-handler', logging.StreamHandler(stream=stream))
-        logger = logging.Logger('root')
+        subject = MultiProcessingHandler("mp-handler", logging.StreamHandler(stream=stream))
+        logger = logging.Logger("root")
         logger.addHandler(subject)
 
         def worker(wid, logger):
@@ -151,17 +147,16 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
     def test_when_the_connection_to_the_child_process_breaks_then_it_closes_the_queue(self):
         stream = StringIO()
         with mock.patch(
-                'multiprocessing_logging.multiprocessing.Queue',
-                autospec=True,
+            "multiprocessing_logging.multiprocessing.Queue",
+            autospec=True,
         ) as queue_class:
             # autospec failed.
             queue_class.return_value = queue_inst = mock.Mock()
             queue_inst.get.side_effect = queue.Empty()
-            queue_inst.empty.side_effect = BrokenPipeError('error on empty')
+            queue_inst.empty.side_effect = BrokenPipeError("error on empty")
 
-            logger = logging.Logger('root')
-            subject = MultiProcessingHandler(
-                'mp-handler', logging.StreamHandler(stream=stream))
+            logger = logging.Logger("root")
+            subject = MultiProcessingHandler("mp-handler", logging.StreamHandler(stream=stream))
             try:
                 logger.addHandler(subject)
             finally:
@@ -170,5 +165,5 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
             queue_inst.close.assert_called_once_with()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

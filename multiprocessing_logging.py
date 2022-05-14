@@ -4,20 +4,20 @@ from __future__ import absolute_import, division, unicode_literals
 
 import logging
 import multiprocessing
+import socket
 import sys
 import threading
 import traceback
-import socket
-
 
 try:
     import queue
 except ImportError:
     import Queue as queue  # Python 2.
+
     BrokenPipeError = OSError
 
 
-__version__ = '0.3.1'
+__version__ = "0.3.1"
 
 
 def install_mp_handler(logger=None):
@@ -29,8 +29,7 @@ def install_mp_handler(logger=None):
         logger = logging.getLogger()
 
     for i, orig_handler in enumerate(list(logger.handlers)):
-        handler = MultiProcessingHandler(
-            'mp-handler-{0}'.format(i), sub_handler=orig_handler)
+        handler = MultiProcessingHandler("mp-handler-{0}".format(i), sub_handler=orig_handler)
 
         logger.removeHandler(orig_handler)
         logger.addHandler(handler)
@@ -52,7 +51,6 @@ def uninstall_mp_handler(logger=None):
 
 
 class MultiProcessingHandler(logging.Handler):
-
     def __init__(self, name, sub_handler=None):
         super(MultiProcessingHandler, self).__init__()
 
@@ -77,10 +75,10 @@ class MultiProcessingHandler(logging.Handler):
 
     def _receive(self):
         try:
-          broken_pipe_error = BrokenPipeError
+            broken_pipe_error = BrokenPipeError
         except NameError:
-          broken_pipe_error = socket.error
-        
+            broken_pipe_error = socket.error
+
         while True:
             try:
                 if self._is_closed and self.queue.empty():
