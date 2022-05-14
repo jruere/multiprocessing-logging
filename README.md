@@ -1,7 +1,5 @@
 # multiprocessing-logging
 
-[![Run Status](https://api.shippable.com/projects/57c8a389407d610f0052c211/badge?branch=master)](https://app.shippable.com/projects/57c8a389407d610f0052c211)
-[![Coverage Badge](https://api.shippable.com/projects/57c8a389407d610f0052c211/coverageBadge?branch=master)](https://app.shippable.com/projects/57c8a389407d610f0052c211)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/multiprocessing-logging.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
 [![License](https://img.shields.io/pypi/l/multiprocessing-logging.svg)](https://pypi.python.org/pypi/multiprocessing-logging/)
 
