@@ -1,3 +1,62 @@
+[tool.black]
+line-length = 100
+target-version = ['py36']
+preview = true
+
+[tool.isort]
+skip_gitignore = true
+balanced_wrapping = true
+include_trailing_comma = true
+py_version = 36
+line_length = 100
+multi_line_output = 3
+use_parentheses = true
+order_by_type = false
+
+[tool.coverage.run]
+source = ["{{cookiecutter.project_name.lower()}}"]
+
+[tool.mypy]
+python_version = 3.6
+
+files = "."
+exclude = "build"
+
+# Display the codes needed for # type: ignore[code] annotations.
+show_error_codes = true
+
+# Options to make the checking stricter.
+check_untyped_defs = true
+disallow_untyped_defs = true
+disallow_any_generics = true
+warn_no_return = true
+strict_optional = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+# We use a lot of third-party libraries we don't have stubs for, as
+# well as a handful of our own modules that we haven't told mypy how
+# to find.  Ignore them.  (For some details, see:
+# `git log -p -S ignore_missing_imports mypy.ini`.)
+#
+# This doesn't get in the way of using the stubs we *do* have.
+ignore_missing_imports = true
+
+# Warn of unreachable or redundant code.
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = "tasks"
+
+# Invoke does not allow typing annotations.
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+# Tests methods are low value.
+disallow_untyped_defs = false
+
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
@@ -5,12 +64,12 @@ build-backend = "setuptools.build_meta"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
+# py27 hangs.
+# pypy hangs.
 # pypy3 hangs.
-# pypy has synchronization issues.
-envlist = py27, py35, py36, py37, py38
+envlist = py36, py37, py38, py310
 isolated_build = True
 
 [testenv]
 commands = {envpython} setup.py test
 """
-
