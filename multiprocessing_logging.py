@@ -11,8 +11,8 @@ import traceback
 
 try:
     import queue
-except ImportError:
-    import Queue as queue  # Python 2.
+except ImportError:  # Python 2.
+    import Queue as queue  # type: ignore[no-redef]
 
     BrokenPipeError = OSError
 

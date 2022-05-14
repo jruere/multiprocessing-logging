@@ -26,9 +26,10 @@ exclude = "build"
 show_error_codes = true
 
 # Options to make the checking stricter.
-check_untyped_defs = true
-disallow_untyped_defs = true
-disallow_any_generics = true
+# Python 2 does not allow for annotations.
+#check_untyped_defs = true
+#disallow_untyped_defs = true
+#disallow_any_generics = true
 warn_no_return = true
 strict_optional = true
 no_implicit_optional = true
