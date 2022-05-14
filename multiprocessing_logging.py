@@ -17,7 +17,7 @@ except ImportError:  # Python 2.
     BrokenPipeError = OSError
 
 
-__version__ = "0.3.1"
+__version__ = "0.3.3"
 
 
 def install_mp_handler(logger=None):
