@@ -4,9 +4,9 @@ from __future__ import absolute_import, division, unicode_literals
 
 import logging
 import multiprocessing
-import sys
 import threading
-import traceback
+from sys import stderr
+from traceback import print_exc
 
 try:
     from queue import Empty
@@ -83,11 +83,11 @@ class MultiProcessingHandler(logging.Handler):
             except (KeyboardInterrupt, SystemExit):
                 raise
             except (BrokenPipeError, EOFError):
-                break
+                break  # The queue was by child?
             except Empty:
                 pass  # This periodically checks if the logger is closed.
             except:
-                traceback.print_exc(file=sys.stderr)
+                print_exc(file=stderr)
 
         self.queue.close()
         self.queue.join_thread()
