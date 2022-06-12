@@ -186,6 +186,37 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
             queue_inst.get.assert_called()
             queue_inst.close.assert_called_once_with()
 
+    def test_and_one_child_dies_then_it_does_not_close_the_queue_for_the_parent(self):
+        def worker(wid):
+            logger = logging.getLogger("child.%d" % (wid,))
+            for i in range(3):
+                logger.critical("Log %d.", i)
+
+        logger = logging.getLogger()
+
+        logger.critical("Starting first batch of workers...")
+        procs = [mp.Process(target=worker, args=(wid,)) for wid in range(2)]
+        for proc in procs:
+            proc.start()
+        logger.critical("First batch workers started.")
+        for proc in procs:
+            proc.join()
+        logger.critical("First batch workers done.")
+
+        logger.critical("Starting second batch of workers...")
+        procs = [mp.Process(target=worker, args=(wid,)) for wid in range(2, 3)]
+        for proc in procs:
+            proc.start()
+        logger.critical("Second batch of workers started.")
+        for proc in procs:
+            proc.join()
+        logger.critical("Second batch of workers done.")
+
+        self.subject.close()
+        self.stream.seek(0)
+        lines = self.stream.readlines()
+        self.assertEqual(3 * (2 + 1) + 2 * 3, len(lines), lines)
+
 
 if __name__ == "__main__":
     unittest.main()
