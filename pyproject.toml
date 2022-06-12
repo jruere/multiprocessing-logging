@@ -14,7 +14,7 @@ use_parentheses = true
 order_by_type = false
 
 [tool.coverage.run]
-source = ["{{cookiecutter.project_name.lower()}}"]
+source = ["multiprocessing_logging"]
 
 [tool.mypy]
 python_version = 3.6
@@ -65,10 +65,8 @@ build-backend = "setuptools.build_meta"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-# py27 hangs.
-# pypy hangs.
 # pypy3 hangs.
-envlist = py36, py37, py38, py310
+envlist = py27, py36, py37, py38, py39, py310, pypy
 isolated_build = True
 
 [testenv]
