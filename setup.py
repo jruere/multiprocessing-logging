@@ -39,5 +39,5 @@ setup(
     py_modules=["multiprocessing_logging"],
     platforms=["POSIX"],
     test_suite="tests",
-    tests_require=["mock~=2.0.0 ; python_version < '3.3'"],
+    tests_require=["mock~=3.0 ; python_version < '3.3'"],
 )
