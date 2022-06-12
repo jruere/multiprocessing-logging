@@ -37,7 +37,7 @@ def install_mp_handler(logger=None):
 def uninstall_mp_handler(logger=None):
     """Unwraps the handlers in the given Logger from a MultiProcessingHandler wrapper
 
-    :param logger: whose handlers to unwrap. By defaul, the root logger.
+    :param logger: whose handlers to unwrap. By default, the root logger.
     """
     if logger is None:
         logger = logging.getLogger()
