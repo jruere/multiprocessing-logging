@@ -61,33 +61,57 @@ class InstallHandlersTest(unittest.TestCase):
 
 
 class WhenMultipleProcessesLogRecords(unittest.TestCase):
-    def test_then_records_should_not_be_garbled(self):
-        stream = StringIO()
-        subject = MultiProcessingHandler("mp-handler", logging.StreamHandler(stream=stream))
-        logger = logging.Logger("root")
-        logger.addHandler(subject)
 
-        def worker(wid, logger):
-            logger.info("Worker %d started.", wid)
+    handlers = ()
+
+    def setUp(self):
+        self.stream = StringIO()
+        self.subject = MultiProcessingHandler(
+            "mp-handler",
+            logging.StreamHandler(stream=self.stream),
+        )
+
+        logger = logging.getLogger()
+
+        self.handlers = logger.handlers
+        for handler in self.handlers:
+            logger.removeHandler(handler)
+
+        logger.addHandler(self.subject)
+
+    def tearDown(self):
+        self.subject.close()
+        logger = logging.getLogger()
+        logger.removeHandler(self.subject)
+
+        for handler in self.handlers:
+            logger.addHandler(handler)
+
+    def test_then_records_should_not_be_garbled(self):
+        def worker(wid):
+            logger = logging.getLogger()
+
+            logger.critical("Worker %d started.", wid)
 
             time.sleep(random.random())
 
-            logger.info("Worker %d finished processing.", wid)
+            logger.critical("Worker %d finished processing.", wid)
 
-        logger.info("Starting workers...")
-        procs = [mp.Process(target=worker, args=(wid, logger)) for wid in range(100)]
+        logger = logging.getLogger()
+
+        procs = [mp.Process(target=worker, args=(wid,)) for wid in range(100)]
+        logger.critical("Starting workers...")
         for proc in procs:
             proc.start()
-
-        logger.info("Workers started.")
+        logger.critical("Workers started.")
 
         for proc in procs:
             proc.join()
-        logger.info("Workers done.")
+        logger.critical("Workers done.")
 
-        subject.close()
-        stream.seek(0)
-        lines = stream.readlines()
+        self.subject.close()
+        self.stream.seek(0)
+        lines = self.stream.readlines()
         self.assertIn("Starting workers...\n", lines)
         self.assertIn("Workers started.\n", lines)
         self.assertEqual("Workers done.\n", lines[-1])
@@ -103,65 +127,63 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
             self.assertTrue(re.match(valid_line, line))
 
     def test_then_it_should_keep_the_last_record_sent(self):
-        stream = StringIO()
-        subject = MultiProcessingHandler("mp-handler", logging.StreamHandler(stream=stream))
-        logger = logging.Logger("root")
-        logger.addHandler(subject)
+        logger = logging.getLogger()
 
-        logger.info("Last record.")
+        logger.critical("Last record.")
 
-        subject.close()
+        self.subject.close()
 
-        value = stream.getvalue()
+        value = self.stream.getvalue()
         self.assertEqual("Last record.\n", value)
 
     def test_then_it_should_pass_all_logs(self):
-        stream = StringIO()
-        subject = MultiProcessingHandler("mp-handler", logging.StreamHandler(stream=stream))
-        logger = logging.Logger("root")
-        logger.addHandler(subject)
-
-        def worker(wid, logger):
+        def worker(wid):
+            logger = logging.getLogger()
             for _ in range(10):
-                logger.info("Worker %d log.", wid)
+                logger.critical("Worker %d log.", wid)
 
-        logger.info("Starting workers...")
-        procs = [mp.Process(target=worker, args=(wid, logger)) for wid in range(2)]
+        logger = logging.getLogger()
+
+        logger.critical("Starting workers...")
+        procs = [mp.Process(target=worker, args=(wid,)) for wid in range(2)]
         for proc in procs:
             proc.start()
-        logger.info("Workers started.")
+        logger.critical("Workers started.")
 
         for proc in procs:
             proc.join()
-        logger.info("Workers done.")
+        logger.critical("Workers done.")
 
-        subject.close()
-
-        stream.seek(0)
-        lines = stream.readlines()
+        self.subject.close()
+        self.stream.seek(0)
+        lines = self.stream.readlines()
         self.assertIn("Starting workers...\n", lines)
         self.assertIn("Workers started.\n", lines)
         self.assertIn("Workers done.\n", lines)
         self.assertEqual(10 * 2 + 3, len(lines))
 
-    def test_when_the_connection_to_the_child_process_breaks_then_it_closes_the_queue(self):
-        stream = StringIO()
+    def test_and_the_connection_to_the_child_process_breaks_then_it_closes_the_queue(self):
         with mock.patch(
             "multiprocessing_logging.multiprocessing.Queue",
             autospec=True,
         ) as queue_class:
             # autospec failed.
-            queue_class.return_value = queue_inst = mock.Mock()
+            queue_inst = queue_class.return_value
             queue_inst.get.side_effect = queue.Empty()
             queue_inst.empty.side_effect = BrokenPipeError("error on empty")
 
-            logger = logging.Logger("root")
-            subject = MultiProcessingHandler("mp-handler", logging.StreamHandler(stream=stream))
+            subject = MultiProcessingHandler(
+                "mp-handler",
+                logging.StreamHandler(stream=self.stream),
+            )
+            logging.getLogger().addHandler(subject)
             try:
-                logger.addHandler(subject)
-            finally:
+                time.sleep(0.1)
                 subject.close()
+            finally:
+                logging.getLogger().removeHandler(subject)
 
+            queue_inst.get.assert_called()
             queue_inst.close.assert_called_once_with()
 
 
