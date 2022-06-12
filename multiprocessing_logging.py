@@ -9,9 +9,9 @@ import threading
 import traceback
 
 try:
-    import queue
+    from queue import Empty
 except ImportError:  # Python 2.
-    import Queue as queue  # type: ignore[no-redef]
+    from Queue import Empty  # type: ignore[no-redef]
 
     BrokenPipeError = OSError
 
@@ -84,7 +84,7 @@ class MultiProcessingHandler(logging.Handler):
                 raise
             except (BrokenPipeError, EOFError):
                 break
-            except queue.Empty:
+            except Empty:
                 pass  # This periodically checks if the logger is closed.
             except:
                 traceback.print_exc(file=sys.stderr)
