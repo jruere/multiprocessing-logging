@@ -1,22 +1,39 @@
 # vim : fileencoding=UTF-8 :
 
-from __future__ import absolute_import, division, unicode_literals
-
+import atexit
 import logging
 import multiprocessing
+import signal
+import sys
 import threading
 
-try:
-    from queue import Empty
-except ImportError:  # Python 2.
-    from Queue import Empty  # type: ignore[no-redef]
+from queue import Empty
 
-    BrokenPipeError = OSError
+__version__ = "0.3.4"
 
 
-__version__ = "0.3.3"
+_sig_handler_lock = multiprocessing.Lock()
+_sig_handler_registered = False
+_prev_sig_handler = None
 
+def _sig_handler(signum, frame):
+    if _prev_sig_handler not in [signal.SIG_IGN, signal.SIG_DFL, None]:
+        signal.signal(signum, _prev_sig_handler)
 
+    # Forces atexit events to run when SIGTERM occurs
+    sys.exit(0)
+
+def  _run_on_exit(func):
+    global _sig_handler_registered
+    global _prev_sig_handler
+
+    with _sig_handler_lock:
+        if not _sig_handler_registered:
+            _prev_sig_handler = signal.signal(signal.SIGTERM, _sig_handler)
+            _sig_handler_registered = True
+
+        atexit.register(func)
+        
 def install_mp_handler(logger=None):
     """Wraps the handlers in the given Logger with an MultiProcessingHandler.
 
@@ -66,6 +83,8 @@ class MultiProcessingHandler(logging.Handler):
         self._receive_thread.daemon = True
         self._receive_thread.start()
 
+        _run_on_exit(self.close)
+
     def setFormatter(self, fmt):
         super(MultiProcessingHandler, self).setFormatter(fmt)
         self.sub_handler.setFormatter(fmt)
@@ -80,7 +99,7 @@ class MultiProcessingHandler(logging.Handler):
                 self.sub_handler.emit(record)
             except (KeyboardInterrupt, SystemExit):
                 raise
-            except (BrokenPipeError, EOFError):
+            except (OSError, EOFError):
                 break  # The queue was closed by child?
             except Empty:
                 pass  # This periodically checks if the logger is closed.
