@@ -14,7 +14,7 @@ except ImportError:  # Python 2.
     BrokenPipeError = OSError
 
 
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 
 
 def install_mp_handler(logger=None):
@@ -80,7 +80,7 @@ class MultiProcessingHandler(logging.Handler):
                 self.sub_handler.emit(record)
             except (KeyboardInterrupt, SystemExit):
                 raise
-            except (BrokenPipeError, EOFError):
+            except (BrokenPipeError, EOFError, OSError):
                 break  # The queue was closed by child?
             except Empty:
                 pass  # This periodically checks if the logger is closed.
