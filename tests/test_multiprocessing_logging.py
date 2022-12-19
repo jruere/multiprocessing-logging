@@ -61,7 +61,6 @@ class InstallHandlersTest(unittest.TestCase):
 
 
 class WhenMultipleProcessesLogRecords(unittest.TestCase):
-
     handlers = ()
 
     def setUp(self):
