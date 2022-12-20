@@ -53,3 +53,16 @@ logging.basicConfig(...)
 install_mp_handler()
 pool = Pool(...)
 ```
+
+# Problems
+The approach of this module relies on
+[fork](https://docs.python.org/3.9/library/multiprocessing.html#multiprocessing.set_start_method)
+being used to create new processes. This start method
+[is basically unsafe when also using threads](https://bugs.python.org/issue37429),
+as this module does.
+
+The consequence is that there's a low probability of the application hanging
+when creating new processes.
+
+As a palliative, don't continuously create new processes. Instead, create a
+Pool once and reuse it.
