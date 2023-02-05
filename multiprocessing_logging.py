@@ -38,7 +38,7 @@ def uninstall_mp_handler(logger=None):
     if logger is None:
         logger = logging.getLogger()
 
-    for handler in logger.handlers:
+    for handler in list(logger.handlers):
         if isinstance(handler, MultiProcessingHandler):
             orig_handler = handler.sub_handler
             logger.removeHandler(handler)
