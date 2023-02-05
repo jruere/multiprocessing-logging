@@ -104,8 +104,12 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
             proc.start()
         logger.critical("Workers started.")
 
+        hanged = 0
         for proc in procs:
-            proc.join()
+            proc.join(1.5)
+            if proc.is_alive():
+                hanged += 1
+                proc.terminate()
         logger.critical("Workers done.")
 
         self.subject.close()
@@ -124,6 +128,8 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         )
         for line in lines:
             self.assertTrue(re.match(valid_line, line))
+
+        self.assertEqual(0, hanged, "Childs hanged")
 
     def test_then_it_should_keep_the_last_record_sent(self):
         logger = logging.getLogger()
