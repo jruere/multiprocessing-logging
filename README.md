@@ -54,6 +54,13 @@ install_mp_handler()
 pool = Pool(...)
 ```
 
+Rules of the thumb when setting up `multiprocess_logging`
+
+- Call `install_mp_handler()` only in the main process, not in individual subprocesses.
+- Depending on when subprocesses fork you need to configure logging formats and levels in the subprocesses.
+  This may or may not include `logger.setLevel()` or `logger.setFormatter()`. However `install_mp_hander()`
+  should be only called in the main process, or you will get resource leaks.
+
 # Problems
 The approach of this module relies on
 [fork](https://docs.python.org/3.9/library/multiprocessing.html#multiprocessing.set_start_method)
