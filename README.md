@@ -58,11 +58,11 @@ Rules of the thumb when setting up `multiprocess_logging`
 
 - Call `install_mp_handler()` only in the main process, not in individual subprocesses.
 - `install_mp_handler()` must be called after all logging handlers have been configured, not before.
-- Depending on when subprocesses fork you need to configure logging formats and levels in the subprocesses.
+- Depending on when subprocesses fork, you need to configure logging formats and levels in the subprocesses.
   This may or may not include `logger.setLevel()` or `logger.setFormatter()`. However `install_mp_hander()`
   should be only called in the main process, or you will get resource leaks.
-- The best spot for subprocesses to set levels and formatters is `multiprocessing.pool.Pool(initializer)` callback,
-  as it is called only once per worker process
+- The best spot for subprocesses to set levels and formats is `multiprocessing.pool.Pool(initializer)` callback,
+  as it is called only once per worker process.
 
 # Problems
 The approach of this module relies on
