@@ -47,11 +47,6 @@ ignore_missing_imports = true
 # Warn of unreachable or redundant code.
 warn_unreachable = true
 
-[[tool.mypy.overrides]]
-module = "tests.*"
-# Tests methods are low value.
-disallow_untyped_defs = false
-
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
