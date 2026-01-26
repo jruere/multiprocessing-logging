@@ -72,3 +72,6 @@ isolated_build = True
 [testenv]
 commands = {envpython} setup.py test
 """
+
+[tool.setuptools.bdist_wheel]
+universal = true
