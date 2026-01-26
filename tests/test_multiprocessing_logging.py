@@ -15,7 +15,7 @@ try:
     import queue
     from unittest import mock
 except ImportError:  # Python 2.
-    import mock  # type: ignore[no-redef, import]
+    import mock  # type: ignore[no-redef, import-untyped]
     import Queue as queue  # type: ignore[no-redef]
 
     BrokenPipeError = OSError

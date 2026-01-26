@@ -17,7 +17,7 @@ order_by_type = false
 source = ["multiprocessing_logging"]
 
 [tool.mypy]
-python_version = 3.6
+python_version = '3.9'
 
 files = "."
 exclude = "build"
@@ -46,12 +46,6 @@ ignore_missing_imports = true
 
 # Warn of unreachable or redundant code.
 warn_unreachable = true
-
-[[tool.mypy.overrides]]
-module = "tasks"
-
-# Invoke does not allow typing annotations.
-disallow_untyped_defs = false
 
 [[tool.mypy.overrides]]
 module = "tests.*"
