@@ -1,3 +1,16 @@
+[project]
+name = "multiprocessing-logging"
+version = "0.3.4"
+description = "Logger for multiprocessing applications"
+readme = "README.md"
+license = { text = "LGPLv3" }
+requires-python = ">=2.7"
+
+[project.optional-dependencies]
+test = [
+  "mock~=3.0; python_version < '3.3'",
+]
+
 [tool.black]
 line-length = 100
 target-version = ['py36']
@@ -57,7 +70,5 @@ env_list = ["py27", "py36", "py37", "py38", "py39", "py310", "pypy"]
 
 [tool.tox.env_run_base]
 description = "Run test under {base_python}"
-commands = [["python setup.py test"]]
-
-[tool.setuptools.bdist_wheel]
-universal = true
+deps = [".[test]"]
+commands = [["python", "-m", "unittest", "discover", "--quiet", "--start-directory", "tests", "--top-level-directory", "."]]

@@ -35,9 +35,6 @@ setup(
     author="Javier Ruere",
     author_email="javier@ruere.com.ar",
     zip_safe=False,
-    packages=["tests"],
     py_modules=["multiprocessing_logging"],
     platforms=["POSIX"],
-    test_suite="tests",
-    tests_require=["mock~=3.0 ; python_version < '3.3'"],
 )
