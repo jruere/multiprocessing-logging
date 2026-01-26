@@ -63,15 +63,12 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.tox]
-legacy_tox_ini = """
-[tox]
-# pypy3 hangs.
-envlist = py27, py36, py37, py38, py39, py310, pypy
-isolated_build = True
+requires = ["tox>=4"]
+env_list = ["py27", "py36", "py37", "py38", "py39", "py310", "pypy"]
 
-[testenv]
-commands = {envpython} setup.py test
-"""
+[tool.tox.env_run_base]
+description = "Run test under {base_python}"
+commands = [["python setup.py test"]]
 
 [tool.setuptools.bdist_wheel]
 universal = true
