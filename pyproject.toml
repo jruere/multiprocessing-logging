@@ -66,9 +66,14 @@ build-backend = "setuptools.build_meta"
 
 [tool.tox]
 requires = ["tox>=4"]
-env_list = ["py37", "py38", "py39", "py310", "pypy"]
+env_list = ["py37", "py38", "py39", "py310", "pypy", "type"]
 
 [tool.tox.env_run_base]
 description = "Run test under {base_python}"
 deps = [".[test]"]
 commands = [["python", "-m", "unittest", "discover", "--quiet", "--start-directory", "tests", "--top-level-directory", "."]]
+
+[tool.tox.env.type]
+description = "run type check on code base"
+deps = ["mypy"]
+commands = [["mypy"]]
