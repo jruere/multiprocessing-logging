@@ -66,7 +66,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.tox]
 requires = ["tox>=4"]
-env_list = ["py27", "py36", "py37", "py38", "py39", "py310", "pypy"]
+env_list = ["py37", "py38", "py39", "py310", "pypy"]
 
 [tool.tox.env_run_base]
 description = "Run test under {base_python}"
