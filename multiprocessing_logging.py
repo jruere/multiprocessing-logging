@@ -20,6 +20,9 @@ def install_mp_handler(logger=None):
 
     :param logger: whose handlers to wrap. By default, the root logger.
     """
+    if multiprocessing.get_start_method() != "fork":
+        raise AssertionError("This module only works with the 'fork' start method.")
+
     if logger is None:
         logger = logging.getLogger()
 
