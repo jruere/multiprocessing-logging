@@ -13,14 +13,14 @@ test = [
 
 [tool.black]
 line-length = 100
-target-version = ['py36']
+target-version = ['py310']
 preview = true
 
 [tool.isort]
 skip_gitignore = true
 balanced_wrapping = true
 include_trailing_comma = true
-py_version = 36
+py_version = 310
 line_length = 100
 multi_line_output = 3
 use_parentheses = true
@@ -30,7 +30,7 @@ order_by_type = false
 source = ["multiprocessing_logging"]
 
 [tool.mypy]
-python_version = '3.9'
+python_version = '3.10'
 
 files = "."
 exclude = "build"
@@ -68,6 +68,9 @@ build-backend = "setuptools.build_meta"
 requires = ["tox>=4"]
 env_list = ["py37", "py38", "py39", "py310", "py311", "py312", "py313", "pypy", "pypy3", "type"]
 
+[tool.tox.env.pypy3]
+base_python = ["pypy3.11"]
+
 [tool.tox.env_run_base]
 description = "Run test under {base_python}"
 deps = [".[test]"]
@@ -75,5 +78,6 @@ commands = [["python", "-m", "unittest", "discover", "--quiet", "--start-directo
 
 [tool.tox.env.type]
 description = "run type check on code base"
+base_python = ["py313"]
 deps = ["mypy"]
 commands = [["mypy"]]
