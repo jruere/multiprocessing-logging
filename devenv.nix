@@ -7,14 +7,9 @@ let
     pythonVersions;
 in
 {
-  # ------------------------------------------------------------------
-  # Python toolchain: pinned interpreter + managed venv
-  #   "3.12" is the primary dev interpreter (provided by the module);
-  #   every other matrix interpreter is added below from nixpkgs-python.
-  # ------------------------------------------------------------------
   languages.python = {
     enable = true;
-    #version = "3.14";
+    version = "3.13";
     venv.enable = true;
   };
 
