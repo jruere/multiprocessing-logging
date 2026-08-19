@@ -29,12 +29,12 @@ in
   # ------------------------------------------------------------------
   # Shell entry point
   # ------------------------------------------------------------------
-  enterShell = ''
-    echo "multiprocessing-logging dev environment"
-    echo "python:  $(python --version)"
-    echo "tox:     $(tox --version)"
-    echo "pre-commit: $(pre-commit --version)"
-  '';
+  # enterShell = ''
+  #   echo "multiprocessing-logging dev environment"
+  #   echo "python:  $(python --version)"
+  #   echo "tox:     $(tox --version)"
+  #   echo "pre-commit: $(pre-commit --version)"
+  # '';
 
   # ------------------------------------------------------------------
   # CI-style verification: `devenv test`
