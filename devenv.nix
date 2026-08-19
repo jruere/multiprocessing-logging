@@ -76,17 +76,12 @@ in
   # '';
 
   # ------------------------------------------------------------------
-  # CI-style verification: `devenv test` (fast: default interpreter only)
+  # CI-style verification: `devenv test`
   # ------------------------------------------------------------------
-  enterTest = ''
-    python -m unittest discover --quiet \
-      --start-directory tests --top-level-directory .
-    mypy
-  '';
+  # enterTest = ''
+  #     Setup test environment.
+  # '';
 
-  # ------------------------------------------------------------------
-  # Optional: full test matrix via `devenv tasks run test:all`
-  # ------------------------------------------------------------------
   tasks = testTasks // {
     "test:type" = {
       description = "Run type check on code base";
@@ -95,8 +90,8 @@ in
 
     "test:all" = {
       description = "Run the full test matrix";
-      exec = "true";
       after = (map (env: "test:${env.name}") envs) ++ [ "test:type" ];
+      before = [ "devenv:enterTest" ];
     };
   };
 }
