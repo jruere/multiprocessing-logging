@@ -1,7 +1,7 @@
 { pkgs, config, inputs, ... }:
 
 let
-  pythonVersions = [ "3.7" "3.8" "3.9" "3.10" "3.11" "3.12" "3.13" ];
+  pythonVersions = [ "3.9" "3.10" "3.11" "3.12" "3.13" ];
   oldPythons = map
     (version: inputs.nixpkgs-python.packages.${pkgs.system}.${version})
     pythonVersions;

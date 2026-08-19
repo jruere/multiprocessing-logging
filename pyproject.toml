@@ -11,8 +11,6 @@ classifiers = [
   "Intended Audience :: Developers",
   "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -85,7 +83,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.tox]
 requires = ["tox>=4"]
-env_list = ["py37", "py38", "py39", "py310", "py311", "py312", "py313", "pypy", "pypy3", "type"]
+env_list = ["py39", "py310", "py311", "py312", "py313", "pypy", "pypy3", "type"]
 
 [tool.tox.env.pypy3]
 base_python = ["pypy3.11"]

@@ -12,11 +12,9 @@ This simple module implements a `Handler` that when set on the root
 `Logger` will handle tunneling the records to the main process so that
 they are handled correctly.
 
-It's currently tested in Linux and Python 2.7 & 3.6+.
+It's currently tested in Linux on CPython 3.9+ and PyPy 2.7.
 
-Pypy3 hangs on the tests so I don't recommend using it.
-
-Pypy appears to be working, recently.
+Pypy3 also passes the tests.
 
 Only works on POSIX systems and only Linux is supported. It does not work on Windows.
 
