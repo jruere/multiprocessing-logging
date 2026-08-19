@@ -20,7 +20,13 @@ def install_mp_handler(logger=None):
 
     :param logger: whose handlers to wrap. By default, the root logger.
     """
-    if multiprocessing.get_start_method() != "fork":
+    # get_start_method() was introduced in Python 3.4.  Python 2 has no
+    # start-method selection and only supports "fork", so the check is
+    # moot there.
+    if (
+        hasattr(multiprocessing, "get_start_method")
+        and multiprocessing.get_start_method() != "fork"
+    ):
         raise AssertionError("This module only works with the 'fork' start method.")
 
     if logger is None:
