@@ -77,6 +77,22 @@ ignore_missing_imports = true
 # Warn of unreachable or redundant code.
 warn_unreachable = true
 
+[tool.tbump.version]
+current = "0.3.4"
+regex = '(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)'
+
+[tool.tbump.git]
+message_template = "Bump to {new_version}"
+tag_template = "v{new_version}"
+
+[[tool.tbump.file]]
+src = "pyproject.toml"
+search = 'version = "{current_version}"'
+
+[[tool.tbump.file]]
+src = "setup.py"
+search = 'version="{current_version}"'
+
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"

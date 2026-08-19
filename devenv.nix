@@ -61,7 +61,11 @@ in
     pkgs.pre-commit
     pkgs.black  # Also used interacively.
     pkgs.mypy
+    pkgs.python3Packages.build
+    pkgs.python3Packages.twine
     pkgs.python3Packages.coverage
+    pkgs.tbump
+    pkgs.jq
     pkgs.pypy2  # PyPy 2.7 → bin/pypy
     pkgs.pypy3  # PyPy 3.11 → bin/pypy3
   ] ++ oldPythons;
@@ -92,6 +96,36 @@ in
       description = "Run the full test matrix";
       after = (map (env: "test:${env.name}") envs) ++ [ "test:type" ];
       before = [ "devenv:enterTest" ];
+    };
+
+    "publish:clean" = {
+      description = "Remove build artifacts (build/, dist/, *.egg-info/)";
+      exec = "rm -rf build dist multiprocessing_logging.egg-info";
+    };
+
+    "publish:version" = {
+      description = "Bump version, commit, tag and push. Usage: devenv tasks run publish:version --input version=0.3.5";
+      exec = ''
+        version="$(jq -r '.version' <<< "$DEVENV_TASK_INPUT")"
+        if [ -z "$version" ] || [ "$version" = "null" ]; then
+          echo "error: missing 'version' input" >&2
+          echo "usage: devenv tasks run publish:version --input version=X.Y.Z" >&2
+          exit 1
+        fi
+        tbump --non-interactive "$version"
+      '';
+    };
+
+    "publish:build" = {
+      description = "Build sdist and wheel distributions into dist/";
+      after = [ "publish:clean" ];
+      exec = "pyproject-build --sdist --wheel --outdir dist";
+    };
+
+    "publish:upload" = {
+      description = "Build and upload the package to PyPI";
+      after = [ "publish:build" "test:all" ];
+      exec = "twine upload dist/*";
     };
   };
 }
