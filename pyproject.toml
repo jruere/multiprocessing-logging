@@ -5,6 +5,25 @@ description = "Logger for multiprocessing applications"
 readme = "README.md"
 license = { text = "LGPLv3" }
 requires-python = ">=2.7"
+keywords = ["multiprocessing", "logging", "logger", "handler"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 2",
+  "Programming Language :: Python :: 2.7",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Operating System :: POSIX",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
 
 [project.optional-dependencies]
 test = [
