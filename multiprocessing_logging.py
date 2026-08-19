@@ -80,7 +80,12 @@ class MultiProcessingHandler(logging.Handler):
     def _receive(self):
         while True:
             try:
-                if self._is_closed and self.queue.empty():
+                # Note: `empty()` only checks the pipe, not the queue's
+                # feeder buffer, so it can report empty while a record just
+                # sent by a child (or by us before `close()`) is still pending
+                # and it would be dropped.  `qsize() == 0` accounts for those
+                # buffered records.  Do not switch this back to `empty()`.
+                if self._is_closed and self.queue.qsize() == 0:
                     break
 
                 record = self.queue.get(timeout=0.2)

@@ -175,7 +175,7 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
             # autospec failed.
             queue_inst = queue_class.return_value
             queue_inst.get.side_effect = queue.Empty()
-            queue_inst.empty.side_effect = BrokenPipeError("error on empty")
+            queue_inst.qsize.side_effect = BrokenPipeError("error on qsize")
 
             subject = MultiProcessingHandler(
                 "mp-handler",
