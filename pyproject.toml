@@ -80,21 +80,3 @@ warn_unreachable = true
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
-
-[tool.tox]
-requires = ["tox>=4"]
-env_list = ["py39", "py310", "py311", "py312", "py313", "pypy", "pypy3", "type"]
-
-[tool.tox.env.pypy3]
-base_python = ["pypy3.11"]
-
-[tool.tox.env_run_base]
-description = "Run test under {base_python}"
-deps = [".[test]"]
-commands = [["python", "-m", "unittest", "discover", "--quiet", "--start-directory", "tests", "--top-level-directory", "."]]
-
-[tool.tox.env.type]
-description = "run type check on code base"
-base_python = ["py313"]
-deps = ["mypy"]
-commands = [["mypy"]]
