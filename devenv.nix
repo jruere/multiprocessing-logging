@@ -58,16 +58,13 @@ in
   # Dev tools + test matrix interpreters
   # ------------------------------------------------------------------
   packages = [
-    pkgs.pre-commit
-    pkgs.black  # Also used interacively.
-    pkgs.mypy
     pkgs.python3Packages.build
     pkgs.python3Packages.twine
     pkgs.python3Packages.coverage
     pkgs.tbump
     pkgs.jq
     pkgs.pypy2  # PyPy 2.7 → bin/pypy
-    pkgs.pypy3  # PyPy 3.11 → bin/pypy3
+    pkgs.pypy3  # PyPy 3.x → bin/pypy3
   ] ++ oldPythons;
 
   # ------------------------------------------------------------------
@@ -127,5 +124,29 @@ in
       after = [ "publish:build" "test:all" ];
       exec = "twine upload dist/*";
     };
+  };
+
+  # https://devenv.sh/git-hooks/
+  git-hooks.hooks = {
+# Standard lints and checks.
+    check-added-large-files.enable = true;
+    check-json.enable = true;
+    check-symlinks.enable = true;
+    check-toml.enable = true;
+    check-xml.enable = true;
+    check-yaml.enable = true;
+    end-of-file-fixer.enable = true;
+    mdsh.enable = true;
+    pretty-format-json = {
+      enable = true;
+      args = [ "--autofix" "--no-sort-keys" ];
+    };
+    shellcheck.enable = true;
+    # Fails. trailing-whitespace.enable = true;
+    yamlfmt.enable = true;
+
+# Python.
+    black.enable = true;
+    mypy.enable = true;
   };
 }

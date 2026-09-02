@@ -58,6 +58,7 @@ target/
 .devenv*
 devenv.local.nix
 devenv.local.yaml
+.pre-commit-config.yaml
 
 # direnv
 .direnv
