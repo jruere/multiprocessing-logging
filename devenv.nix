@@ -3,7 +3,7 @@
 let
   pythonVersions = [ "2.7" "3.9" "3.10" "3.11" "3.12" "3.13" ];
   oldPythons = map
-    (version: inputs.nixpkgs-python.packages.${pkgs.system}.${version})
+    (version: inputs.nixpkgs-python.packages.${pkgs.stdenv.hostPlatform.system}.${version})
     pythonVersions;
 
   # Python 2.7 test dependencies.  nixpkgs removed `python27Packages`
