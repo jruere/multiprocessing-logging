@@ -48,6 +48,11 @@ let
     envs);
 in
 {
+  # https://devenv.sh/binary-caching/
+  # nixpkgs-python builds every Python from source unless its cache is used.
+  # Do not override its nixpkgs input, cached builds are tied to its pin.
+  cachix.pull = [ "devenv" "nixpkgs-python" ];
+
   languages.python = {
     enable = true;
     version = "3.13";
