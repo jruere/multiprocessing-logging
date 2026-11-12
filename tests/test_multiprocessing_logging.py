@@ -7,6 +7,8 @@ import logging
 import multiprocessing as mp
 import random
 import re
+import sys
+import threading
 import time
 import unittest
 from io import StringIO
@@ -21,6 +23,81 @@ except ImportError:  # Python 2.
     BrokenPipeError = OSError
 
 from multiprocessing_logging import install_mp_handler, MultiProcessingHandler
+
+
+class WhenOtherHandlersUseTheRecord(unittest.TestCase):
+    def test_original_arguments_and_exception_are_preserved(self):
+        records = []
+
+        class RecordingHandler(logging.Handler):
+            def emit(self, record):
+                records.append((record.msg, record.args, record.exc_info, record.exc_text))
+
+        stream = StringIO()
+        subject = MultiProcessingHandler("mp-preserve-record", logging.StreamHandler(stream))
+        logger = logging.Logger("preserve-record")
+        logger.addHandler(subject)
+        logger.addHandler(RecordingHandler())
+        # A lock and a traceback cannot be pickled. They must still be removed
+        # from the queued copy while remaining available to the next handler.
+        argument = threading.Lock()
+        try:
+            try:
+                raise ValueError("original exception")
+            except ValueError:
+                exception = sys.exc_info()
+                logger.error("argument: %s", argument, exc_info=exception)
+        finally:
+            subject.close()
+
+        self.assertEqual(1, len(records))
+        self.assertEqual("argument: %s", records[0][0])
+        self.assertEqual((argument,), records[0][1])
+        self.assertIs(exception, records[0][2])
+        self.assertIsNone(records[0][3])
+        self.assertIn("argument: " + str(argument), stream.getvalue())
+        self.assertIn("ValueError: original exception", stream.getvalue())
+
+    def test_wrapped_handlers_format_exceptions_independently_in_a_child(self):
+        class TaggedFormatter(logging.Formatter):
+            def __init__(self, tag):
+                super(TaggedFormatter, self).__init__("%(message)s %(request_id)s")
+                self.tag = tag
+
+            def formatException(self, exc_info):
+                return self.tag + ": " + str(exc_info[1])
+
+        streams = (StringIO(), StringIO())
+        logger = logging.Logger("independent-formatters")
+        for tag, stream in zip(("first", "second"), streams):
+            handler = logging.StreamHandler(stream)
+            handler.setFormatter(TaggedFormatter(tag))
+            logger.addHandler(handler)
+        install_mp_handler(logger)
+
+        def worker():
+            try:
+                raise ValueError("child exception")
+            except ValueError:
+                logger.exception("child %s", "message", extra={"request_id": "request-1"})
+
+        process = mp.Process(target=worker)
+        try:
+            process.start()
+            process.join(5)
+            self.assertFalse(process.is_alive())
+            self.assertEqual(0, process.exitcode)
+        finally:
+            if process.is_alive():
+                process.terminate()
+                process.join()
+            for handler in logger.handlers:
+                handler.close()
+
+        for tag, stream in zip(("first", "second"), streams):
+            self.assertEqual(
+                "child message request-1\n" + tag + ": child exception\n", stream.getvalue()
+            )
 
 
 class InstallHandlersTest(unittest.TestCase):

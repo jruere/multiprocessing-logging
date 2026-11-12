@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import, division, unicode_literals
 
+import copy
 import logging
 import multiprocessing
 import threading
@@ -110,6 +111,9 @@ class MultiProcessingHandler(logging.Handler):
         self.queue.put_nowait(s)
 
     def _format_record(self, record):
+        # Other handlers receive the same record. Keep their arguments and
+        # exception information intact when preparing our copy for pickling.
+        record = copy.copy(record)
         # ensure that exc_info and args
         # have been stringified. Removes any chance of
         # unpickleable things inside and possibly reduces
