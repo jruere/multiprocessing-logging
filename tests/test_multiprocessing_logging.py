@@ -5,8 +5,10 @@ from __future__ import absolute_import, division, unicode_literals
 
 import logging
 import multiprocessing as mp
+import os
 import random
 import re
+import tempfile
 import time
 import unittest
 from io import StringIO
@@ -20,7 +22,76 @@ except ImportError:  # Python 2.
 
     BrokenPipeError = OSError
 
-from multiprocessing_logging import install_mp_handler, MultiProcessingHandler
+from multiprocessing_logging import install_mp_handler, MultiProcessingHandler, uninstall_mp_handler
+
+
+class UninstallHandlersTest(unittest.TestCase):
+    def test_repeated_uninstall_stops_receivers_and_preserves_the_file_handler(self):
+        with tempfile.NamedTemporaryFile() as output:
+            original = logging.FileHandler(output.name, mode="w")
+            logger = logging.Logger("uninstall-file-handler")
+            logger.addHandler(original)
+            wrappers = []
+            try:
+                for iteration in range(3):
+                    install_mp_handler(logger)
+                    wrapper = logger.handlers[0]
+                    wrappers.append(wrapper)
+                    logger.warning("queued %d", iteration)
+                    uninstall_mp_handler(logger)
+
+                    self.assertEqual([original], logger.handlers)
+                    self.assertFalse(wrapper._receive_thread.is_alive())
+                    self.assertTrue(wrapper.queue._reader.closed)
+                    self.assertTrue(wrapper.queue._writer.closed)
+                    wrapper.close()
+                    self.assertFalse(original.stream.closed)
+                    os.fstat(original.stream.fileno())
+                    logger.warning("direct %d", iteration)
+
+                uninstall_mp_handler(logger)
+                original.flush()
+                with open(output.name) as result:
+                    self.assertEqual(
+                        "".join("queued %d\ndirect %d\n" % (i, i) for i in range(3)),
+                        result.read(),
+                    )
+            finally:
+                for wrapper in wrappers:
+                    wrapper.close()
+                original.close()
+
+    def test_uninstall_drains_records_from_a_completed_child(self):
+        stream = StringIO()
+        original = logging.StreamHandler(stream)
+        logger = logging.Logger("uninstall-child")
+        logger.addHandler(original)
+        install_mp_handler(logger)
+        wrapper = logger.handlers[0]
+
+        def worker():
+            for number in range(20):
+                logger.warning("child %d", number)
+
+        process = mp.Process(target=worker)
+        try:
+            process.start()
+            process.join(5)
+            self.assertFalse(process.is_alive())
+            self.assertEqual(0, process.exitcode)
+            uninstall_mp_handler(logger)
+            logger.warning("parent resumed")
+            self.assertFalse(wrapper._receive_thread.is_alive())
+            self.assertEqual(
+                "".join("child %d\n" % i for i in range(20)) + "parent resumed\n",
+                stream.getvalue(),
+            )
+        finally:
+            if process.is_alive():
+                process.terminate()
+                process.join()
+            wrapper.close()
+            original.close()
 
 
 class InstallHandlersTest(unittest.TestCase):

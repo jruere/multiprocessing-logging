@@ -52,6 +52,7 @@ def uninstall_mp_handler(logger=None):
             orig_handler = handler.sub_handler
             logger.removeHandler(handler)
             logger.addHandler(orig_handler)
+            handler._close(close_sub_handler=False)
 
 
 class MultiProcessingHandler(logging.Handler):
@@ -133,9 +134,13 @@ class MultiProcessingHandler(logging.Handler):
             self.handleError(record)
 
     def close(self):
+        self._close(close_sub_handler=True)
+
+    def _close(self, close_sub_handler):
         if not self._is_closed:
             self._is_closed = True
             self._receive_thread.join(5.0)  # Waits for receive queue to empty.
 
-            self.sub_handler.close()
+            if close_sub_handler:
+                self.sub_handler.close()
             super(MultiProcessingHandler, self).close()
