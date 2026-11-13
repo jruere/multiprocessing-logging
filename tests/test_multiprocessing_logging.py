@@ -26,7 +26,7 @@ from multiprocessing_logging import install_mp_handler, MultiProcessingHandler, 
 
 
 class UninstallHandlersTest(unittest.TestCase):
-    def test_repeated_uninstall_stops_receivers_and_preserves_the_file_handler(self):
+    def test_when_uninstall_is_repeated_then_it_stops_receivers_and_keeps_the_file_handler(self):
         with tempfile.NamedTemporaryFile() as output:
             original = logging.FileHandler(output.name, mode="w")
             logger = logging.Logger("uninstall-file-handler")
@@ -61,7 +61,7 @@ class UninstallHandlersTest(unittest.TestCase):
                     wrapper.close()
                 original.close()
 
-    def test_uninstall_drains_records_from_a_completed_child(self):
+    def test_when_a_child_has_completed_then_uninstall_drains_its_records(self):
         stream = StringIO()
         original = logging.StreamHandler(stream)
         logger = logging.Logger("uninstall-child")
@@ -157,7 +157,7 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         for handler in self.handlers:
             logger.addHandler(handler)
 
-    def test_then_records_should_not_be_garbled(self):
+    def test_when_multiple_processes_log_then_records_are_not_garbled(self):
         def worker(wid):
             logger = logging.getLogger()
 
@@ -202,7 +202,7 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
 
         self.assertEqual(0, hanged, "Childs hanged")
 
-    def test_then_it_should_keep_the_last_record_sent(self):
+    def test_when_the_handler_is_closed_then_it_keeps_the_last_record_sent(self):
         logger = logging.getLogger()
 
         logger.critical("Last record.")
@@ -212,7 +212,7 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         value = self.stream.getvalue()
         self.assertEqual("Last record.\n", value)
 
-    def test_then_it_should_pass_all_logs(self):
+    def test_when_children_log_then_it_passes_all_logs(self):
         def worker(wid):
             logger = logging.getLogger()
             for _ in range(10):
@@ -238,7 +238,7 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         self.assertIn("Workers done.\n", lines)
         self.assertEqual(10 * 2 + 3, len(lines))
 
-    def test_and_the_connection_to_the_child_process_breaks_then_it_closes_the_queue(self):
+    def test_when_the_connection_to_the_child_process_breaks_then_it_closes_the_queue(self):
         with mock.patch(
             "multiprocessing_logging.multiprocessing.Queue",
             autospec=True,
@@ -262,7 +262,7 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
             queue_inst.get.assert_called()
             queue_inst.close.assert_called_once_with()
 
-    def test_and_one_child_dies_then_it_does_not_close_the_queue_for_the_parent(self):
+    def test_when_one_child_dies_then_it_does_not_close_the_queue_for_the_parent(self):
         def worker(wid):
             logger = logging.getLogger("child.%d" % (wid,))
             for i in range(3):
