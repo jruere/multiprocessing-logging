@@ -25,6 +25,13 @@ except ImportError:  # Python 2.
 from multiprocessing_logging import install_mp_handler, MultiProcessingHandler, uninstall_mp_handler
 
 
+def setUpModule():
+    # Python 3.14 changed the default start method on Linux to "forkserver",
+    # while this module only supports "fork".
+    if hasattr(mp, "set_start_method"):
+        mp.set_start_method("fork", force=True)
+
+
 class UninstallHandlersTest(unittest.TestCase):
     def test_when_uninstall_is_repeated_then_it_stops_receivers_and_keeps_the_file_handler(self):
         with tempfile.NamedTemporaryFile() as output:
