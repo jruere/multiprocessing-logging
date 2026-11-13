@@ -118,17 +118,26 @@ class InstallHandlersTest(unittest.TestCase):
         self.assertIs(wrapper_handler.sub_handler, self.handler)
 
     def test_when_a_logger_is_passed_then_it_does_not_change_the_root_logger(self):
+        root = logging.getLogger()
+        root_handlers = list(root.handlers)
+
         with mock.patch("logging.getLogger") as getLogger:
             install_mp_handler(self.logger)
 
-            self.assertEqual(0, getLogger.call_count)
+        self.assertEqual(0, getLogger.call_count)
+        self.assertEqual(root_handlers, root.handlers)
 
     def test_when_a_logger_is_passed_then_it_wraps_all_handlers(self):
+        second_handler = logging.NullHandler()
+        self.logger.addHandler(second_handler)
+
         install_mp_handler(self.logger)
 
-        (wrapper_handler,) = self.logger.handlers
-        self.assertIsInstance(wrapper_handler, MultiProcessingHandler)
-        self.assertIs(wrapper_handler.sub_handler, self.handler)
+        first_wrapper, second_wrapper = self.logger.handlers
+        self.assertIsInstance(first_wrapper, MultiProcessingHandler)
+        self.assertIs(first_wrapper.sub_handler, self.handler)
+        self.assertIsInstance(second_wrapper, MultiProcessingHandler)
+        self.assertIs(second_wrapper.sub_handler, second_handler)
 
 
 class WhenMultipleProcessesLogRecords(unittest.TestCase):
@@ -191,11 +200,13 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         self.assertEqual("Workers done.\n", lines[-1])
 
         valid_line = re.compile(
+            r"(?:"
             r"(?:Starting workers...)"
             r"|(?:Worker \d+ started\.)"
             r"|(?:Workers started\.)"
             r"|(?:Worker \d+ finished processing\.)"
             r"|(?:Workers done.)"
+            r")$"
         )
         for line in lines:
             self.assertTrue(re.match(valid_line, line))
@@ -236,6 +247,8 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         self.assertIn("Starting workers...\n", lines)
         self.assertIn("Workers started.\n", lines)
         self.assertIn("Workers done.\n", lines)
+        self.assertEqual(10, lines.count("Worker 0 log.\n"))
+        self.assertEqual(10, lines.count("Worker 1 log.\n"))
         self.assertEqual(10 * 2 + 3, len(lines))
 
     def test_when_the_connection_to_the_child_process_breaks_then_it_closes_the_queue(self):
@@ -262,7 +275,7 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
             queue_inst.get.assert_called()
             queue_inst.close.assert_called_once_with()
 
-    def test_when_one_child_dies_then_it_does_not_close_the_queue_for_the_parent(self):
+    def test_when_a_child_exits_then_it_does_not_close_the_queue_for_the_parent(self):
         def worker(wid):
             logger = logging.getLogger("child.%d" % (wid,))
             for i in range(3):
