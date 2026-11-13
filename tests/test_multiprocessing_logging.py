@@ -77,10 +77,11 @@ class UninstallHandlersTest(unittest.TestCase):
         try:
             process.start()
             process.join(5)
-            self.assertFalse(process.is_alive())
-            self.assertEqual(0, process.exitcode)
             uninstall_mp_handler(logger)
             logger.warning("parent resumed")
+
+            self.assertFalse(process.is_alive())
+            self.assertEqual(0, process.exitcode)
             self.assertFalse(wrapper._receive_thread.is_alive())
             self.assertEqual(
                 "".join("child %d\n" % i for i in range(20)) + "parent resumed\n",
@@ -177,8 +178,8 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
             logger.critical("Worker %d finished processing.", wid)
 
         logger = logging.getLogger()
-
         procs = [mp.Process(target=worker, args=(wid,)) for wid in range(100)]
+
         logger.critical("Starting workers...")
         for proc in procs:
             proc.start()
@@ -195,10 +196,10 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         self.subject.close()
         self.stream.seek(0)
         lines = self.stream.readlines()
+
         self.assertIn("Starting workers...\n", lines)
         self.assertIn("Workers started.\n", lines)
         self.assertEqual("Workers done.\n", lines[-1])
-
         valid_line = re.compile(
             r"(?:"
             r"(?:Starting workers...)"
@@ -210,7 +211,6 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         )
         for line in lines:
             self.assertTrue(re.match(valid_line, line))
-
         self.assertEqual(0, hanged, "Childs hanged")
 
     def test_when_the_handler_is_closed_then_it_keeps_the_last_record_sent(self):
@@ -236,7 +236,6 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         for proc in procs:
             proc.start()
         logger.critical("Workers started.")
-
         for proc in procs:
             proc.join()
         logger.critical("Workers done.")
@@ -260,12 +259,12 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
             queue_inst = queue_class.return_value
             queue_inst.get.side_effect = queue.Empty()
             queue_inst.qsize.side_effect = BrokenPipeError("error on qsize")
-
             subject = MultiProcessingHandler(
                 "mp-handler",
                 logging.StreamHandler(stream=self.stream),
             )
             logging.getLogger().addHandler(subject)
+
             try:
                 time.sleep(0.1)
                 subject.close()
@@ -304,6 +303,7 @@ class WhenMultipleProcessesLogRecords(unittest.TestCase):
         self.subject.close()
         self.stream.seek(0)
         lines = self.stream.readlines()
+
         self.assertEqual(3 * (2 + 1) + 2 * 3, len(lines), lines)
 
 
