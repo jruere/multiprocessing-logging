@@ -62,3 +62,7 @@ when creating new processes.
 
 As a palliative, don't continuously create new processes. Instead, create a
 Pool once and reuse it.
+
+Since Python 3.14 the default start method on Linux is `forkserver`, so on
+those versions you must call `multiprocessing.set_start_method("fork")` before
+`install_mp_handler()`. Otherwise it raises an `AssertionError`.
